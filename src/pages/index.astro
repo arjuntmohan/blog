@@ -1,0 +1,76 @@
+---
+import PostList from '../components/PostList.astro';
+import { SITE } from '../consts';
+import Base from '../layouts/Base.astro';
+import { countTags, getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const tags = countTags(posts);
+---
+
+<Base>
+	<section class="intro">
+		<h1>{SITE.description}</h1>
+		<p>
+			I'm {SITE.author.split(' ')[0]}, a student asking questions in public. New posts land here as I
+			figure things out. <a href="/about/">More about me and this&nbsp;blog&nbsp;→</a>
+		</p>
+	</section>
+
+	{
+		tags.length > 0 && (
+			<nav class="topics" aria-label="Browse by topic">
+				<span class="eyebrow">Browse</span>
+				{tags.map(([tag, n]) => (
+					<a href={`/tags/${tag}/`}>
+						#{tag} <span>{n}</span>
+					</a>
+				))}
+			</nav>
+		)
+	}
+
+	{posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">The first post is on its way.</p>}
+</Base>
+
+<style>
+	.intro {
+		margin-bottom: 3rem;
+	}
+	.intro h1 {
+		font-size: clamp(1.9rem, 5vw, 2.6rem);
+		font-weight: 400;
+		line-height: 1.2;
+		margin-bottom: 1rem;
+	}
+	.intro p {
+		margin: 0;
+		color: var(--muted);
+	}
+	.topics {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.5rem 1rem;
+		margin-bottom: 2.5rem;
+		padding: 0.9rem 0;
+		border-block: 1px solid var(--line);
+		font-family: var(--sans);
+		font-size: 0.85rem;
+	}
+	.topics a {
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.topics a:hover {
+		color: var(--accent);
+	}
+	.topics a span {
+		color: var(--muted);
+		font-size: 0.75rem;
+	}
+	.empty {
+		color: var(--muted);
+		font-style: italic;
+	}
+</style>

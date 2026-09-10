@@ -1,0 +1,54 @@
+---
+import { COMMENTS } from '../consts';
+
+const ready = Boolean(COMMENTS.repo && COMMENTS.repoId && COMMENTS.categoryId);
+---
+
+<section class="comments" aria-labelledby="comments-heading">
+	<h2 id="comments-heading" class="eyebrow">Join the conversation</h2>
+	{
+		ready ? (
+			<script
+				is:inline
+				src="https://giscus.app/client.js"
+				data-repo={COMMENTS.repo}
+				data-repo-id={COMMENTS.repoId}
+				data-category={COMMENTS.category}
+				data-category-id={COMMENTS.categoryId}
+				data-mapping="pathname"
+				data-strict="1"
+				data-reactions-enabled="1"
+				data-emit-metadata="0"
+				data-input-position="top"
+				data-theme="preferred_color_scheme"
+				data-lang="en"
+				data-loading="lazy"
+				crossorigin="anonymous"
+				async
+			/>
+		) : (
+			<p class="placeholder">
+				Comments will appear here once giscus is set up. See “Turn on comments” in README.md.
+			</p>
+		)
+	}
+</section>
+
+<style>
+	.comments {
+		margin-top: 3.5rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+	}
+	h2 {
+		margin: 0 0 1.2rem;
+	}
+	.placeholder {
+		padding: 1rem 1.2rem;
+		border: 1px dashed var(--line);
+		border-radius: 8px;
+		font-family: var(--sans);
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+</style>

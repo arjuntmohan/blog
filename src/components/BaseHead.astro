@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { SITE } from '../consts';
+
+interface Props {
+	title?: string;
+	description?: string;
+	/** Path to the social preview image, e.g. /og/my-post.png */
+	image?: string;
+	type?: 'website' | 'article';
+}
+
+const { title, description = SITE.description, image = '/og/site.png', type = 'website' } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = new URL(image, Astro.site);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('rss.xml', Astro.site)} />
+<meta name="generator" content={Astro.generator} />
+
+<Font cssVariable="--font-serif" preload />
+
+<link rel="canonical" href={canonicalURL} />
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={SITE.author} />
+
+<!-- Link previews on LinkedIn, iMessage, Slack, etc. -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.title} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title ?? SITE.title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />

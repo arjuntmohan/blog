@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { countTags, getPosts } from '../../lib/posts';
+
+const tags = countTags(await getPosts());
+---
+
+<Base title="Topics" description="Every topic I've written about.">
+	<h1>Topics</h1>
+	<ul>
+		{
+			tags.map(([tag, n]) => (
+				<li>
+					<a href={`/tags/${tag}/`}>#{tag}</a>
+					<span class="eyebrow">
+						{n} {n === 1 ? 'post' : 'posts'}
+					</span>
+				</li>
+			))
+		}
+	</ul>
+</Base>
+
+<style>
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+	li {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding: 0.8rem 0;
+		border-bottom: 1px solid var(--line);
+	}
+	a {
+		color: var(--ink);
+		text-decoration: none;
+		font-size: 1.3rem;
+	}
+	a:hover {
+		color: var(--accent);
+	}
+</style>

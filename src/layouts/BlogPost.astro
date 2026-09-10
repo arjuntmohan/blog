@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import Comments from '../components/Comments.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import TagList from '../components/TagList.astro';
+import type { Post } from '../lib/posts';
+import { readingTime } from '../lib/posts';
+import Base from './Base.astro';
+
+interface Props {
+	post: Post;
+	newer?: Post;
+	older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, draft } = post.data;
+---
+
+<Base title={title} description={description} image={`/og/${post.id}.png`} type="article">
+	<article>
+		<header>
+			<p class="eyebrow">
+				<FormattedDate date={pubDate} /> · {readingTime(post.body)}
+				{draft && <span class="draft">Draft — only visible to you</span>}
+			</p>
+			<h1>{title}</h1>
+			<p class="dek">{description}</p>
+			{
+				updatedDate && (
+					<p class="eyebrow updated">
+						Updated <FormattedDate date={updatedDate} />
+					</p>
+				)
+			}
+		</header>
+		{heroImage && <Image class="hero" width={1200} height={630} src={heroImage} alt="" />}
+		<div class="content">
+			<slot />
+		</div>
+		<footer>
+			<TagList tags={tags} />
+		</footer>
+	</article>
+
+	<Comments />
+
+	{
+		(newer || older) && (
+			<nav class="more" aria-label="More posts">
+				{older && (
+					<a href={`/blog/${older.id}/`}>
+						<span class="eyebrow">← Previous</span>
+						{older.data.title}
+					</a>
+				)}
+				{newer && (
+					<a class="next" href={`/blog/${newer.id}/`}>
+						<span class="eyebrow">Next →</span>
+						{newer.data.title}
+					</a>
+				)}
+			</nav>
+		)
+	}
+</Base>
+
+<style>
+	header {
+		margin-bottom: 2.5rem;
+	}
+	header .eyebrow {
+		margin: 0 0 0.9rem;
+	}
+	h1 {
+		margin-bottom: 0.6rem;
+	}
+	.dek {
+		margin: 0;
+		font-size: 1.3rem;
+		line-height: 1.45;
+		color: var(--muted);
+		font-style: italic;
+	}
+	.updated {
+		margin-top: 1rem;
+	}
+	.draft {
+		margin-left: 0.6em;
+		padding: 0.1em 0.5em;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.hero {
+		width: 100%;
+		margin-bottom: 2.5rem;
+	}
+	article > footer {
+		margin-top: 2.5rem;
+	}
+	.more {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.5rem;
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+	}
+	.more a {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		color: var(--ink);
+		text-decoration: none;
+		line-height: 1.3;
+	}
+	.more a:hover {
+		color: var(--accent);
+	}
+	.more .next {
+		grid-column: 2;
+		text-align: right;
+	}
+</style>
