@@ -8,7 +8,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	// Your live address. Change this to https://<your-github-username>.github.io
 	// (or your own domain) before publishing — link previews and the RSS feed depend on it.
-	site: 'https://example.github.io',
+	site: 'https://arjunmohan333.github.io',
 	integrations: [mdx(), sitemap()],
 	// The post list lives on the home page.
 	redirects: { '/blog': '/' },

@@ -10,7 +10,7 @@ export const SITE = {
 	// Leave a link as '' to hide its icon.
 	links: {
 		linkedin: '', // e.g. 'https://www.linkedin.com/in/your-handle/'
-		github: '', // e.g. 'https://github.com/your-username'
+		github: 'https://github.com/arjunmohan333',
 		email: '', // e.g. 'you@example.com'
 	},
 };
@@ -19,7 +19,7 @@ export const SITE = {
 // Fill these in after following the "Turn on comments" steps in README.md.
 // Until repoId and categoryId are set, posts show a placeholder instead of the comment box.
 export const COMMENTS = {
-	repo: '', // e.g. 'your-username/your-username.github.io'
+	repo: 'arjunmohan333/arjunmohan333.github.io',
 	repoId: '',
 	category: 'Comments',
 	categoryId: '',
