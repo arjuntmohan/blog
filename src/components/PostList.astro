@@ -1,27 +1,37 @@
 ---
 import type { Post } from '../lib/posts';
 import FormattedDate from './FormattedDate.astro';
-import TagList from './TagList.astro';
 
 interface Props {
 	posts: Post[];
+	/** Total number of posts, so each one keeps its issue number on filtered lists. */
+	numberFrom?: Post[];
 }
-const { posts } = Astro.props;
+const { posts, numberFrom = posts } = Astro.props;
+// Oldest post is No. 01.
+const chronological = [...numberFrom].reverse();
+const number = (post: Post) => String(chronological.indexOf(post) + 1).padStart(2, '0');
 ---
 
 <ol class="posts">
 	{
 		posts.map((post) => (
 			<li>
-				<p class="eyebrow">
-					<FormattedDate date={post.data.pubDate} />
-					{post.data.draft && <span class="draft">Draft</span>}
-				</p>
-				<h2>
-					<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-				</h2>
-				<p class="description">{post.data.description}</p>
-				<TagList tags={post.data.tags} />
+				<a href={`/blog/${post.id}/`}>
+					<span class="num">{number(post)}</span>
+					<span class="body">
+						<span class="title">{post.data.title}</span>
+						<span class="description">{post.data.description}</span>
+						<span class="meta">
+							<FormattedDate date={post.data.pubDate} />
+							{post.data.tags.length > 0 && <> · #{post.data.tags.join('  #')}</>}
+							{post.data.draft && <span class="draft">Draft</span>}
+						</span>
+					</span>
+					<span class="arrow" aria-hidden="true">
+						→
+					</span>
+				</a>
 			</li>
 		))
 	}
@@ -32,40 +42,83 @@ const { posts } = Astro.props;
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		box-shadow: var(--shadow);
+		overflow: hidden;
 	}
-	li {
-		padding: 1.9rem 0;
+	li + li {
 		border-top: 1px solid var(--line);
 	}
-	li:first-child {
-		border-top: 0;
-		padding-top: 0;
-	}
-	.eyebrow {
-		margin: 0 0 0.35rem;
-	}
-	h2 {
-		margin: 0 0 0.4rem;
-		font-size: 1.55rem;
-	}
-	h2 a {
-		color: var(--ink);
+	a {
+		display: grid;
+		grid-template-columns: 2.5rem 1fr auto;
+		gap: 0.75rem;
+		align-items: start;
+		padding: 1.35rem 1.4rem;
 		text-decoration: none;
+		color: var(--ink);
+		transition: background 0.15s;
 	}
-	h2 a:hover {
-		color: var(--accent);
+	a:hover {
+		background: var(--surface);
+	}
+	.num {
+		font-family: var(--mono);
+		font-size: 0.78rem;
+		color: var(--muted);
+		padding-top: 0.3rem;
+	}
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		min-width: 0;
+	}
+	.title {
+		font-size: 1.2rem;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
 	}
 	.description {
-		margin: 0 0 0.7rem;
 		color: var(--muted);
-		font-size: 1.05rem;
-		line-height: 1.55;
+		font-size: 0.95rem;
+		line-height: 1.5;
+	}
+	.meta {
+		font-family: var(--mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin-top: 0.3rem;
 	}
 	.draft {
 		margin-left: 0.6em;
-		padding: 0.1em 0.5em;
-		border-radius: 999px;
-		background: var(--accent-soft);
-		color: var(--accent);
+		padding: 0.15em 0.5em;
+		border-radius: 5px;
+		background: var(--peach);
+		color: var(--peach-ink);
+	}
+	.arrow {
+		color: var(--muted);
+		padding-top: 0.15rem;
+		transition:
+			transform 0.15s,
+			color 0.15s;
+	}
+	a:hover .arrow {
+		color: var(--ink);
+		transform: translateX(3px);
+	}
+	@media (max-width: 520px) {
+		a {
+			grid-template-columns: 2rem 1fr;
+			padding: 1.1rem 1rem;
+		}
+		.arrow {
+			display: none;
+		}
 	}
 </style>

@@ -11,8 +11,11 @@ const links = [
 ---
 
 <footer>
-	<div>
-		<span>© {new Date().getFullYear()} {SITE.author}</span>
+	<div class="inner">
+		<div>
+			<a class="name" href="/">{SITE.title}</a>
+			<p class="eyebrow">© {new Date().getFullYear()} · Written by a human, one week at a time</p>
+		</div>
 		<ul>
 			{
 				links.map(({ href, label }) => (
@@ -28,25 +31,34 @@ const links = [
 <style>
 	footer {
 		border-top: 1px solid var(--line);
-		font-family: var(--sans);
-		font-size: 0.85rem;
-		color: var(--muted);
+		background: var(--surface);
 	}
-	div {
-		max-width: var(--measure);
+	.inner {
+		max-width: var(--wide);
 		margin: 0 auto;
-		padding: 1.75rem 1.25rem 2.5rem;
+		padding: 2.5rem 1.25rem 3rem;
 		display: flex;
 		justify-content: space-between;
-		gap: 1rem;
+		align-items: flex-start;
+		gap: 1.5rem;
 		flex-wrap: wrap;
+	}
+	.name {
+		font-family: var(--serif);
+		font-size: 1.5rem;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.eyebrow {
+		margin: 0.4rem 0 0;
 	}
 	ul {
 		display: flex;
-		gap: 1.2rem;
+		gap: 1.3rem;
 		list-style: none;
-		margin: 0;
+		margin: 0.35rem 0 0;
 		padding: 0;
+		font-size: 0.92rem;
 	}
 	a {
 		color: var(--muted);

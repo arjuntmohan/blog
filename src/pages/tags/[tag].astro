@@ -7,29 +7,33 @@ export async function getStaticPaths() {
 	const posts = await getPosts();
 	return countTags(posts).map(([tag]) => ({
 		params: { tag },
-		props: { posts: posts.filter((p) => p.data.tags.includes(tag)) },
+		props: { posts: posts.filter((p) => p.data.tags.includes(tag)), all: posts },
 	}));
 }
 
 interface Props {
 	posts: Post[];
+	all: Post[];
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts, all } = Astro.props;
 ---
 
 <Base title={`#${tag}`} description={`Posts tagged #${tag}.`}>
 	<p class="eyebrow"><a href="/tags/">All topics</a></p>
 	<h1>#{tag}</h1>
 	<p class="count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
-	<PostList posts={posts} />
+	<PostList posts={posts} numberFrom={all} />
 </Base>
 
 <style>
 	.eyebrow a {
 		color: var(--muted);
 		text-decoration: none;
+	}
+	.eyebrow {
+		margin: 0 0 1rem;
 	}
 	h1 {
 		margin-bottom: 0.3rem;

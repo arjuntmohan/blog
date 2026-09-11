@@ -33,11 +33,11 @@ draft: true
 
 <!--
   Innovator habits (aim for at least 2 per post):
-    [ ] Associating    — connect ideas from unrelated fields
-    [ ] Questioning    — ask "why?", "why not?", "what if?"
-    [ ] Observing      — describe something you actually noticed
-    [ ] Networking     — bring in what someone else told you or wrote
-    [ ] Experimenting  — try something and report what happened
+    [ ] Associating: connect ideas from unrelated fields
+    [ ] Questioning: ask "why?", "why not?", "what if?"
+    [ ] Observing: describe something you actually noticed
+    [ ] Networking: bring in what someone else told you or wrote
+    [ ] Experimenting: try something and report what happened
 
   Before publishing:
     [ ] End with a question readers can answer in one comment

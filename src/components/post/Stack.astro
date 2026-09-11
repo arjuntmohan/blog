@@ -1,0 +1,65 @@
+---
+// A labeled row of technology chips. <Stack groups={{ 'Backend': ['Python', 'Flask'] }} />
+interface Props {
+	groups: Record<string, string[]>;
+}
+const { groups } = Astro.props;
+---
+
+<dl class="stack">
+	{
+		Object.entries(groups).map(([label, items]) => (
+			<div>
+				<dt class="eyebrow">{label}</dt>
+				<dd>
+					{items.map((item) => (
+						<span>{item}</span>
+					))}
+				</dd>
+			</div>
+		))
+	}
+</dl>
+
+<style>
+	.stack {
+		margin: 2rem 0;
+		padding: 0.4rem 1.3rem;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		box-shadow: var(--shadow);
+	}
+	div {
+		display: grid;
+		grid-template-columns: 9rem 1fr;
+		gap: 0.8rem;
+		align-items: baseline;
+		padding: 0.8rem 0;
+	}
+	div + div {
+		border-top: 1px dashed var(--line);
+	}
+	dt {
+		margin: 0;
+	}
+	dd {
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+	}
+	span {
+		padding: 0.25em 0.6em;
+		border-radius: 6px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		font-size: 0.85rem;
+	}
+	@media (max-width: 520px) {
+		div {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+	}
+</style>

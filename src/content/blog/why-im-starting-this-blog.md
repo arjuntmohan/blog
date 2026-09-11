@@ -11,11 +11,11 @@ draft: true
   to `draft: false` above. Replace the italic prompts below with your own writing, then delete them.
 
   Innovator habits to work in (aim for at least 2):
-    [ ] Associating    — connect ideas from unrelated fields
-    [ ] Questioning    — ask "why?", "why not?", "what if?"
-    [ ] Observing      — describe something you actually noticed in the real world
-    [ ] Networking     — bring in what someone else told you or wrote
-    [ ] Experimenting  — try something and report what happened
+    [ ] Associating: connect ideas from unrelated fields
+    [ ] Questioning: ask "why?", "why not?", "what if?"
+    [ ] Observing: describe something you actually noticed in the real world
+    [ ] Networking: bring in what someone else told you or wrote
+    [ ] Experimenting: try something and report what happened
 -->
 
 *Open with a moment, not a thesis. What happened recently that made you want to start writing

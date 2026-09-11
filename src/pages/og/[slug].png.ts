@@ -6,7 +6,7 @@ import { renderCard } from '../../lib/og';
 export const getStaticPaths = (async () => {
 	const posts = await getPosts();
 	return [
-		{ params: { slug: 'site' }, props: { title: SITE.description, kicker: 'Blog' } },
+		{ params: { slug: 'site' }, props: { title: SITE.tagline, kicker: 'Blog' } },
 		...posts.map((post) => ({
 			params: { slug: post.id },
 			props: { title: post.data.title, kicker: post.data.tags[0] ?? 'Blog' },

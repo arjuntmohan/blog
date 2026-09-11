@@ -1,0 +1,111 @@
+---
+// Two-lane diagram of a RAG system: building the index once, then answering each question.
+---
+
+<figure class="rag">
+	<div class="lanes">
+		<section>
+			<p class="eyebrow">Indexing · done ahead of time</p>
+			<ol>
+				<li><strong>Official product documentation</strong><span>The source of truth for what’s supported</span></li>
+				<li><strong>Split into sections</strong><span>Several thousand self-contained passages</span></li>
+				<li><strong>Embed each section</strong><span>Turn text into a vector that captures its meaning</span></li>
+				<li class="store"><strong>Vector index</strong><span>Searchable by meaning, not just keywords</span></li>
+			</ol>
+		</section>
+		<section>
+			<p class="eyebrow">Answering · every time an error occurs</p>
+			<ol>
+				<li><strong>Error message + context</strong><span>What failed, and the details surrounding it</span></li>
+				<li class="store"><strong>Retrieve the closest sections</strong><span>The top matches from the vector index</span></li>
+				<li><strong>Build a grounded prompt</strong><span>Numbered excerpts plus strict instructions to use only them</span></li>
+				<li class="out"><strong>LLM explanation + sources</strong><span>Plain language, every claim traceable to a document</span></li>
+			</ol>
+		</section>
+	</div>
+	<figcaption>How the explanation layer works, simplified. The green steps are the vector index: built once, searched every time.</figcaption>
+</figure>
+
+<style>
+	.rag {
+		margin: 2.5rem 0;
+		padding: 1.4rem;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 16px;
+	}
+	.lanes {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.5rem;
+		align-items: start;
+	}
+	.eyebrow {
+		margin: 0 0 0.9rem;
+	}
+	ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1.1rem;
+	}
+	li {
+		position: relative;
+		margin: 0;
+		padding: 0.75rem 0.9rem;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+	li:not(:last-child)::after {
+		content: '↓';
+		position: absolute;
+		left: 50%;
+		bottom: -1.15rem;
+		transform: translateX(-50%);
+		font-size: 0.8rem;
+		line-height: 1.1rem;
+		color: var(--muted);
+	}
+	strong {
+		font-weight: 500;
+		font-size: 0.95rem;
+		line-height: 1.3;
+	}
+	span {
+		font-size: 0.8rem;
+		line-height: 1.4;
+		color: var(--muted);
+	}
+	.store {
+		background: var(--green);
+		border-color: #c9e3bb;
+	}
+	.out {
+		background: var(--ink);
+		border-color: var(--ink);
+	}
+	.out strong {
+		color: #fbfbf8;
+	}
+	.out span {
+		color: rgba(251, 251, 248, 0.7);
+	}
+	figcaption {
+		margin-top: 1.2rem;
+		font-size: 0.78rem;
+		font-style: italic;
+		color: var(--muted);
+	}
+	@media (max-width: 640px) {
+		.lanes {
+			grid-template-columns: 1fr;
+			gap: 1.6rem;
+		}
+	}
+</style>

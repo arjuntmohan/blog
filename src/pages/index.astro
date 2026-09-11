@@ -8,69 +8,148 @@ const posts = await getPosts();
 const tags = countTags(posts);
 ---
 
-<Base>
-	<section class="intro">
-		<h1>{SITE.description}</h1>
-		<p>
-			I'm {SITE.author.split(' ')[0]}, a student asking questions in public. New posts land here as I
-			figure things out. <a href="/about/">More about me and this&nbsp;blog&nbsp;→</a>
-		</p>
+<Base hero>
+	<section class="hero" data-hero slot="hero">
+		<img
+			class="art"
+			src="/hero.png"
+			alt="Pixel-art landscape: a city skyline beyond green hills, with a big tree under a blue sky"
+			width="320"
+			height="170"
+		/>
+		<div class="inner">
+			<p class="eyebrow">A blog by {SITE.author}</p>
+			<h1>{SITE.tagline}</h1>
+			<a class="cta" href="#writing">Start reading ↓</a>
+		</div>
 	</section>
 
-	{
-		tags.length > 0 && (
-			<nav class="topics" aria-label="Browse by topic">
-				<span class="eyebrow">Browse</span>
-				{tags.map(([tag, n]) => (
-					<a href={`/tags/${tag}/`}>
-						#{tag} <span>{n}</span>
-					</a>
-				))}
-			</nav>
-		)
-	}
+	<section class="intro">
+		<p class="eyebrow">What this is</p>
+		<h2>
+			A student asking questions in public.{' '}
+			<span class="soft">New posts every week on AI, the future of work, and the tech reshaping how we live.</span>
+		</h2>
+	</section>
 
-	{posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">The first post is on its way.</p>}
+	<section id="writing">
+		<div class="section-head">
+			<p class="eyebrow">Latest writing</p>
+			{
+				tags.length > 0 && (
+					<ul class="topics">
+						{tags.slice(0, 6).map(([tag]) => (
+							<li>
+								<a href={`/tags/${tag}/`}>#{tag}</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</div>
+		{posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">The first post is on its way.</p>}
+	</section>
 </Base>
 
 <style>
-	.intro {
-		margin-bottom: 3rem;
+	.hero {
+		position: relative;
+		margin-top: calc(-1 * var(--header-h));
+		height: min(88vh, 46rem);
+		min-height: 30rem;
+		overflow: hidden;
+		background: #5b97de;
 	}
-	.intro h1 {
-		font-size: clamp(1.9rem, 5vw, 2.6rem);
-		font-weight: 400;
-		line-height: 1.2;
+	.art {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 60% 100%;
+		image-rendering: pixelated;
+		border-radius: 0;
+	}
+	.hero::after {
+		content: '';
+		position: absolute;
+		inset: 0 0 30% 0;
+		background:
+			linear-gradient(90deg, rgba(20, 50, 110, 0.32), rgba(20, 50, 110, 0) 60%),
+			linear-gradient(180deg, rgba(20, 50, 110, 0.25), rgba(20, 50, 110, 0) 50%);
+		pointer-events: none;
+	}
+	.inner {
+		position: relative;
+		z-index: 1;
+		max-width: var(--wide);
+		margin: 0 auto;
+		padding: calc(var(--header-h) + clamp(2.5rem, 9vh, 5rem)) 1.25rem 0;
+		color: #fff;
+	}
+	.inner .eyebrow {
+		color: rgba(255, 255, 255, 0.8);
+		margin: 0 0 1.1rem;
+	}
+	h1 {
+		max-width: 28rem;
+		font-size: clamp(2rem, 3.6vw, 2.75rem);
+		line-height: 1.14;
+		letter-spacing: -0.02em;
+		text-shadow: 0 2px 20px rgba(20, 50, 100, 0.25);
+		margin: 0 0 1.8rem;
+	}
+	.cta {
+		display: inline-block;
+		padding: 0.65em 1.1em;
+		border-radius: 10px;
+		background: #fbfbf8;
+		color: var(--ink);
+		font-size: 0.92rem;
+		text-decoration: none;
+		box-shadow: 0 4px 20px rgba(20, 50, 100, 0.2);
+	}
+	.intro {
+		margin: 1rem 0 4.5rem;
+	}
+	.intro h2 {
+		margin: 0.8rem 0 0;
+		font-size: clamp(1.6rem, 3.6vw, 2.05rem);
+		line-height: 1.22;
+	}
+	.section-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+		flex-wrap: wrap;
 		margin-bottom: 1rem;
 	}
-	.intro p {
+	.section-head .eyebrow {
 		margin: 0;
-		color: var(--muted);
 	}
 	.topics {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0.5rem 1rem;
-		margin-bottom: 2.5rem;
-		padding: 0.9rem 0;
-		border-block: 1px solid var(--line);
-		font-family: var(--sans);
-		font-size: 0.85rem;
+		gap: 0.9rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		font-family: var(--mono);
+		font-size: 0.72rem;
 	}
 	.topics a {
-		color: var(--ink);
+		color: var(--muted);
 		text-decoration: none;
 	}
 	.topics a:hover {
-		color: var(--accent);
-	}
-	.topics a span {
-		color: var(--muted);
-		font-size: 0.75rem;
+		color: var(--ink);
 	}
 	.empty {
+		padding: 2rem;
+		border: 1px dashed var(--line-strong);
+		border-radius: 14px;
 		color: var(--muted);
-		font-style: italic;
+		text-align: center;
 	}
 </style>

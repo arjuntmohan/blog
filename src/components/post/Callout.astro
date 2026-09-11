@@ -1,0 +1,45 @@
+---
+// A highlighted box inside a post. <Callout label="TL;DR">…</Callout>
+interface Props {
+	label?: string;
+	tone?: 'plain' | 'green' | 'peach';
+}
+const { label, tone = 'plain' } = Astro.props;
+---
+
+<aside class:list={['callout', tone]}>
+	{label && <p class="eyebrow">{label}</p>}
+	<slot />
+</aside>
+
+<style>
+	.callout {
+		margin: 2rem 0;
+		padding: 1.25rem 1.4rem;
+		border-radius: 14px;
+		border: 1px solid var(--line);
+		background: var(--card);
+		box-shadow: var(--shadow);
+	}
+	.green {
+		background: var(--green);
+		border-color: #c9e3bb;
+	}
+	.peach {
+		background: var(--peach);
+		border-color: #e6c9bd;
+	}
+	.eyebrow {
+		margin: 0 0 0.6rem;
+	}
+	.green .eyebrow {
+		color: var(--green-ink);
+	}
+	.peach .eyebrow {
+		color: var(--peach-ink);
+	}
+	.callout :global(p:last-child),
+	.callout :global(ul:last-child) {
+		margin-bottom: 0;
+	}
+</style>

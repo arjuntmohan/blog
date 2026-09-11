@@ -6,7 +6,8 @@ const tags = countTags(await getPosts());
 ---
 
 <Base title="Topics" description="Every topic I've written about.">
-	<h1>Topics</h1>
+	<p class="eyebrow">Browse</p>
+	<h1>Topics <span class="soft">I keep coming back to.</span></h1>
 	<ul>
 		{
 			tags.map(([tag, n]) => (
@@ -22,23 +23,37 @@ const tags = countTags(await getPosts());
 </Base>
 
 <style>
+	.eyebrow {
+		margin: 0 0 1rem;
+	}
 	ul {
 		list-style: none;
 		padding: 0;
+		margin: 2.5rem 0 0;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		box-shadow: var(--shadow);
+		overflow: hidden;
 	}
 	li {
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
-		padding: 0.8rem 0;
-		border-bottom: 1px solid var(--line);
+		padding: 1rem 1.4rem;
+	}
+	li + li {
+		border-top: 1px solid var(--line);
+	}
+	li .eyebrow {
+		margin: 0;
 	}
 	a {
 		color: var(--ink);
 		text-decoration: none;
-		font-size: 1.3rem;
+		font-size: 1.15rem;
 	}
 	a:hover {
-		color: var(--accent);
+		text-decoration: underline;
 	}
 </style>

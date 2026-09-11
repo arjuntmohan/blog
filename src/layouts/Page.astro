@@ -6,6 +6,13 @@ const { frontmatter } = Astro.props;
 ---
 
 <Base title={frontmatter.title} description={frontmatter.description}>
+	<p class="eyebrow">{frontmatter.eyebrow ?? frontmatter.title}</p>
 	<h1>{frontmatter.title}</h1>
 	<slot />
 </Base>
+
+<style>
+	.eyebrow {
+		margin: 0 0 1rem;
+	}
+</style>

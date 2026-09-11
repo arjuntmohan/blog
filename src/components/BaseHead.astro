@@ -19,12 +19,15 @@ const imageURL = new URL(image, Astro.site);
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#f5f5f2" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('rss.xml', Astro.site)} />
 <meta name="generator" content={Astro.generator} />
 
-<Font cssVariable="--font-serif" preload />
+<Font cssVariable="--font-sans" preload />
+<Font cssVariable="--font-mono" />
+<Font cssVariable="--font-serif" />
 
 <link rel="canonical" href={canonicalURL} />
 <title>{pageTitle}</title>

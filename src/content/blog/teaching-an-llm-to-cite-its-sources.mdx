@@ -1,0 +1,298 @@
+---
+title: "Teaching an LLM to Cite Its Sources: Lessons from Building a RAG System at Cisco"
+description: "A technical deep dive into retrieval-augmented generation: the design decisions behind an enterprise RAG system, the research behind each one, and how Cisco approaches grounded AI."
+pubDate: 2026-09-10
+tags: ["ai", "tech", "internship"]
+draft: false
+---
+
+import Callout from '../../components/post/Callout.astro';
+import RagDiagram from '../../components/post/RagDiagram.astro';
+import Stack from '../../components/post/Stack.astro';
+
+{/*
+  DRAFT. Before publishing, check with your manager that this is fine to share publicly.
+  The project itself is described only generically.
+*/}
+
+Early in my internship, the AI component of a tool I was building produced an explanation that was clear, well
+structured, and confident. It was also wrong.
+
+This summer I was a Product Management Intern on Cisco's Data Center Networking team, where I built an internal AI
+tool that helps engineers interpret complex technical errors using official product documentation. The component that
+determined whether the tool was useful at all was its **retrieval-augmented generation (RAG)** system, and making that
+system produce answers engineers could trust was the most demanding problem I worked on.
+
+This post examines that system in depth: the architecture, the key design decision at each stage, the research behind
+those decisions, and how Cisco approaches the same challenge at enterprise scale. It closes with outcomes and practical
+next steps for students heading into internships.
+
+<Callout label="Key takeaways">
+- RAG grounds a model's answers in documents retrieved at query time rather than in its training data. For technical
+  products that change with every release, that is the only reliable approach.
+- Retrieval quality sets the ceiling for the entire system. If the right passage is not retrieved, no prompt can
+  recover it.
+- RAG reduces hallucinations but does not eliminate them. Showing sources, so users can verify every claim, is what
+  makes the output trustworthy.
+</Callout>
+
+## Why retrieval-augmented generation
+
+Engineers needed fast, reliable explanations of technical errors. The knowledge required to explain them existed, but
+it was spread across extensive official documentation and the experience of a small number of specialists. A
+general-purpose LLM appears to be a natural fit, but it answers from what it absorbed during training. In an enterprise
+setting, that creates three problems:
+
+1. **Coverage.** New products and new software releases are, by definition, absent from a model's training data.
+2. **Currency.** Product capabilities change with every release. Knowledge embedded in model weights goes stale, while
+   a document index can be updated the day the documentation changes.
+3. **Verifiability.** An answer generated from memory has no source. An answer generated from retrieved documents can
+   cite exactly where each claim originates.
+
+RAG, introduced by Lewis et al. in 2020, addresses all three by pairing a language model with a retriever that supplies
+relevant documents at query time, so the output is conditioned on real text rather than on model parameters alone.[^lewis]
+Fine-tuning a model on the documentation would help with coverage temporarily, but it would need to be repeated with
+every documentation update and still would not produce citations. The principle behind RAG is familiar from academic
+writing: every claim needs a source.
+
+## Architecture
+
+A RAG system has two halves. The indexing pipeline processes documentation ahead of time into a searchable index. The
+query pipeline uses that index each time a question arrives.
+
+<RagDiagram />
+
+In this system, queries were not typed by users. They were generated automatically from the error and the context
+surrounding it, and the resulting explanation was returned alongside its sources.
+
+## Design decisions, stage by stage
+
+Each stage of the pipeline involves a decision with a measurable effect on answer quality. For each one, this section
+covers the tradeoff, what the research says, and how I implemented it.
+
+### 1. Segmenting the documentation
+
+Documentation must be divided into passages before it can be indexed. Passages that are too small lose their context;
+passages that are too large dilute the relevant content with noise. Anthropic's retrieval research identifies chunk
+size, chunk boundaries, and overlap as variables that measurably affect retrieval quality.[^anthropic]
+
+Document structure matters as much as size. Researchers at LinkedIn found that preserving the internal structure of
+support tickets, rather than splitting them into flat text chunks, improved retrieval accuracy (MRR) by 77.6% over
+their baseline. Once deployed, the system reduced median issue resolution time by 28.6%.[^linkedin] Technical
+documentation is similarly structured, with headings, sections, and reference tables, and a segmentation strategy that
+respects that structure preserves the context each passage needs.
+
+**Implementation:** The pipeline divided the official product documentation into several thousand sections, each stored
+with its title and source so that every answer could cite where it came from.
+
+### 2. Embeddings and the vector index
+
+Each passage is converted into an **embedding**, a numerical vector that represents its meaning, so that passages about
+related concepts sit close together even when they use different terminology. The vectors are stored in an index
+optimized for nearest-neighbor search.
+
+Embedding models improve quickly, which makes portability a design requirement. DoorDash's 2025 summer interns built a
+shared RAG platform for company chatbots, and one of its core capabilities was re-embedding an entire collection with a
+new model without losing data.[^doordash1]
+
+**Implementation:** Because the server had no direct internet access, the embedding and vector index components had to
+run entirely within the restricted environment. The resulting index covered several thousand documentation sections.
+
+<p class="code-label">Simplified sketch of the general indexing pattern</p>
+
+```python
+def build_index(documents):
+    # Divide every document into self-contained sections
+    sections = [s for doc in documents for s in split_into_sections(doc)]
+
+    # One vector per section, plus metadata so answers can cite a source
+    vectors = embed([s.text for s in sections])
+    index.add(vectors, metadata=[
+        {"title": s.title, "source": s.url} for s in sections
+    ])
+```
+
+### 3. Retrieval
+
+Retrieval sets the ceiling for the entire system. If the relevant passage is not returned, the model either produces an
+unhelpful answer or, worse, fills the gap with something plausible.
+
+Embedding search captures semantic similarity well but is weaker at matching exact strings. In technical domains, the
+most important tokens are often exact strings: command names, feature identifiers, and error codes. This is why many
+production systems combine embeddings with lexical search such as BM25. Anthropic quantified the effect: adding context
+to each chunk reduced top-20 retrieval failures by 35%, adding BM25 raised the reduction to 49%, and adding a reranking
+step raised it to 67%.[^anthropic]
+
+**Implementation:** Each query combined the error message with its surrounding context, giving the search both the
+semantic intent and the exact error text. Each query retrieved a small number of the most relevant sections, favoring
+fewer, higher-quality excerpts over more context. If I rebuilt the system today, adding keyword search and a reranking
+step would be my first improvement, given how often exact command names and error codes matter in this domain.
+
+### 4. Generation and grounding
+
+Generation is where the system's most consequential failure mode appeared. When the model was given a large volume of
+retrieved material to summarize, it occasionally produced an explanation that read well but was not supported by the
+sources. The failures fell into two categories: generic answers that did not address the specific error, and fabricated
+answers that sounded plausible but were not supported by the documentation.
+
+Research explains why adding more context does not solve this. Liu et al. showed that language models use information
+at the beginning and end of their input more reliably than information in the middle, and that performance declines
+as context length grows.[^lost] More context is not the same as better grounding.
+
+The solution was strict, explicit grounding: supply a small set of numbered excerpts, instruct the model to use only
+those excerpts, require a citation for every claim, and present the sources alongside the answer.
+
+<p class="code-label">Simplified sketch of the grounding pattern</p>
+
+```python
+def explain_error(error: str, context: str) -> dict:
+    # Search only the official documentation index,
+    # never the open web or the model's own memory
+    excerpts = doc_index.search(f"{error}\n{context}", top_k=5)
+
+    prompt = f"""Explain this error for a non-expert.
+Use ONLY the numbered documentation excerpts below,
+and cite an excerpt for every claim.
+
+Error:
+{error}
+
+Context:
+{context}
+
+Documentation:
+{format_numbered(excerpts)}"""
+
+    return {
+        "explanation": llm.complete(prompt),
+        # Displayed to the user next to the answer
+        "sources": [e.source for e in excerpts],
+    }
+```
+
+### 5. Evaluation
+
+Evaluation is the stage most often underestimated. The RAGAS framework decomposes RAG quality into four measurable
+properties:[^ragas]
+
+| Metric | What it measures |
+| --- | --- |
+| **Faithfulness** | Whether every claim in the answer is supported by the retrieved text |
+| **Answer relevancy** | Whether the answer addresses the question that was asked |
+| **Context precision** | How much of the retrieved material is actually relevant |
+| **Context recall** | Whether retrieval found everything the answer required |
+
+The failure described above is a faithfulness failure: retrieval succeeded, but the answer extended beyond what the
+retrieved text supported.
+
+RAG is not a guarantee. When Stanford researchers evaluated commercial legal research tools marketed on their use of
+RAG, the tools still hallucinated between 17% and 33% of the time.[^stanford] For that reason, source attribution is
+arguably the most important design decision in a system like this. It changes the user's role from trusting the model
+to verifying it.
+
+**Implementation:** Accuracy was validated through weekly feedback from the engineers using the tool. Because every
+explanation displayed its sources, any answer could be checked directly against the documentation, which made errors
+easy to catch and report.
+
+## How Cisco approaches grounded AI
+
+Cisco's public work on AI reflects the same principles at enterprise scale.
+
+- **Grounding with RAG and human review.** Cisco IQ applies RAG, document intelligence, and knowledge graphs to
+  product documentation, design guides, and security policies. Its engineering team describes layered guardrails
+  "from RAG to schema enforcement and Human-in-the-Loop (HIL) validation."[^ciscoiq]
+- **Specializing the model.** The Cisco Deep Network Model is an LLM purpose-built for networking, trained on
+  CCIE-level knowledge and more than 3,000 reasoning traces annotated and validated by Cisco experts. Cisco reports up
+  to 20% more accurate reasoning than leading general-purpose LLMs on troubleshooting, configuration, and automation
+  tasks.[^dnm]
+- **Keeping users in the loop.** Cisco Meraki's documentation for its AI Assistant for networking notes that the
+  assistant draws on product documentation and industry best practices, and still recommends that users validate its
+  suggestions, particularly for critical configurations.[^meraki]
+- **Open models for specialized domains.** Cisco's Foundation AI team released Foundation-sec-8b, an open-weight
+  8-billion-parameter security model built on Llama 3.1 and trained on roughly 5.1 billion tokens of cybersecurity
+  data.[^fsec]
+
+Two complementary strategies emerge. One is to **specialize the model** so that it knows more about the domain. The
+other is to **ground the model** so that it only states what the documentation supports. Cisco applies both, and in
+both cases it retains human verification. The system I built applied the grounding strategy at a much smaller scale,
+and it arrived at the same conclusion: the objective is not an AI that sounds authoritative, but one whose output can
+be checked.
+
+## What intern projects reveal about RAG in practice
+
+Interns are now routinely building production retrieval systems. DoorDash's published 2025 intern projects offer a
+useful comparison:
+
+| Project | Retrieval approach | Central challenge |
+| --- | --- | --- |
+| Documentation-grounded error explanations (Cisco, my project) | Vector search over official product documentation, with strict citation requirements | Preventing fluent answers that the sources did not support |
+| Shared RAG chatbot platform (DoorDash)[^doordash1] | Isolated vector collections per chatbot, with configurable embedding models | Scaling to many teams, migrating embedding models, and falling back gracefully when retrieval fails |
+| Context-aware shopping engine (DoorDash)[^doordash3] | Nearest-neighbor candidate retrieval with FAISS, followed by LLM reranking and filtering | Preserving specific user intent within strict latency limits |
+
+Two patterns stand out. First, every project treats retrieval as the critical stage: DoorDash's platform includes
+explicit fallback behavior for failed retrievals, and its shopping engine found that combining fast vector retrieval
+with LLM reranking outperformed either method alone. Second, the differentiator is no longer whether a system can
+retrieve and generate. It is whether the output can be trusted, maintained, and improved over time.
+
+## Delivering in a restricted enterprise environment
+
+Deployment introduced its own set of constraints. The production server was security-restricted with no direct internet
+access, which required corporate proxy routing, OAuth tokens with automatic refresh, an offline dependency
+installation process, and a standard production stack of nginx, Gunicorn, and systemd. A significant share of the
+internship went to access and approvals rather than code. In an enterprise, security and infrastructure constraints are
+not obstacles to the project. They are part of its requirements.
+
+<Stack
+	groups={{
+		'Application': ['Python', 'Flask', 'Internal APIs'],
+		'RAG': ['Document pipeline', 'Embeddings', 'Vector search index', 'Internal LLM service', 'Grounded prompts'],
+		'Security': ['OAuth 2.0 with auto-refresh', 'Corporate proxy routing'],
+		'Deployment': ['nginx', 'Gunicorn', 'systemd', 'Offline dependencies'],
+	}}
+/>
+
+## Outcomes
+
+- **Adoption.** Engineers on the team used the tool to answer customer questions without waiting on a specialist.
+- **Process change.** A manual, expert-dependent process became repeatable and evidence-based, with every explanation
+  traceable to official documentation.
+- **Career direction.** The experience confirmed that I want to pursue product management, specifically owning products
+  end to end, from concept to deployment.
+
+## Next steps for students heading into internships
+
+**1. Build a small RAG system before you start.** Index your own course notes, query it, and then deliberately try to
+make it produce a wrong answer. The failure cases teach more than the demo.
+
+**2. Learn to evaluate, not only to build.** Understand faithfulness, relevancy, and recall well enough to explain
+them. "It looks right" is not a test.
+
+**3. Define "done" as deployed.** In coursework, code is finished when it runs locally. In industry, it is finished
+when it is deployed, secured, documented, and usable by someone who did not build it.
+
+**4. Plan around constraints you do not control.** Access requests, approvals, and security reviews take real time.
+Start them on the first day.
+
+**5. Build relationships across the organization.** The connections I made during the internship made my work easier,
+and the most valuable feedback I received came from a perspective I had not considered.
+
+**6. Get comfortable with not knowing.** A large technology company has more systems and context than anyone can learn
+in a single summer. Productive discomfort is part of the job.
+
+<Callout label="Discussion" tone="green">
+If you have used AI tools at work or school, **what made you trust the answers, or stop trusting them?** If you have
+built a RAG system, which stage caused you the most trouble? I would like to hear your perspective in the comments.
+</Callout>
+
+[^lewis]: Lewis et al., [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401), NeurIPS 2020.
+[^anthropic]: Anthropic, [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval), September 2024. Figures are reductions in top-20 retrieval failure rate.
+[^linkedin]: Xu et al. (LinkedIn), [Retrieval-Augmented Generation with Knowledge Graphs for Customer Service Question Answering](https://arxiv.org/abs/2404.17723), SIGIR 2024.
+[^doordash1]: DoorDash, [Part 1: DoorDash 2025 summer intern projects](https://careersatdoordash.com/blog/part-1-doordash-2025-summer-intern-projects/).
+[^lost]: Liu et al., [Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/abs/2307.03172), TACL 2024.
+[^ragas]: Es et al., [Ragas: Automated Evaluation of Retrieval Augmented Generation](https://arxiv.org/abs/2309.15217), 2023.
+[^stanford]: Magesh et al., [Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools](https://arxiv.org/abs/2405.20362), Stanford RegLab, 2024.
+[^ciscoiq]: Bhaskar Jayakrishnan, [From Tools to Intelligence: The Engineering Philosophy of Cisco IQ](https://blogs.cisco.com/customerexperience/from-tools-to-intelligence-the-engineering-philosophy-of-cisco-iq), Cisco Blogs, November 2025.
+[^dnm]: Anand Raghavan, [Meet the Cisco Deep Network Model](https://blogs.cisco.com/networking/meet-the-cisco-deep-network-model-trained-by-the-experts-purpose-built-for-the-network), Cisco Blogs, June 2025.
+[^meraki]: Cisco Meraki Documentation, [AI Assistant for Networking](https://documentation.meraki.com/General_Administration/Cross-Platform_Content/AI_Assistant_for_Networking).
+[^fsec]: Cisco, [Foundation-sec-8b: Cisco Foundation AI's First Open-Source Security Model](https://blogs.cisco.com/security/foundation-sec-cisco-foundation-ai-first-open-source-security-model), 2025.
+[^doordash3]: DoorDash, [Part 3: DoorDash 2025 summer intern projects](https://careersatdoordash.com/blog/part-3-doordash-2025-summer-intern-projects/).

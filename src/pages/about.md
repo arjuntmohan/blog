@@ -1,52 +1,46 @@
 ---
 layout: ../layouts/Page.astro
 title: About
-description: Who I am, what this blog is about, and why I'd like you to argue with me.
+description: Who I am, what this blog is about, and why I'd like you to join the conversation.
 ---
 
 <!--
-  FIRST DRAFT — rewrite this in your own words. Anything in [brackets] is for you to fill in.
-  Your professor expects this page to keep changing all semester, so treat it as a living document.
-  The four questions from the assignment it should answer:
-    1. Who is your audience?
-    2. What question / problem do you want to talk about?
-    3. How will you get readers to comment?
-    4. What change are you trying to make?
+  Living document: your professor expects this page to evolve all semester.
+  It answers the assignment's four questions: audience, the big question, how readers engage, and the change you want.
 -->
 
-Hi, I'm Arjun. I'm a [year] studying [major] at [school], and this is where I think out loud.
+Hi, I'm Arjun Mohan. I'm a senior studying Management Information Systems at San Diego State University. This past
+summer I was a Product Management Intern at Cisco, where I built an internal AI tool grounded in official product
+documentation. This blog is where I think out loud about what I'm learning.
 
 ## What this blog is about
 
-Everyone my age is walking into a working world that AI is rewriting in real time. The jobs we
-trained for might look completely different by the time we get them. The apps we use every day are
-shaping how we pay attention, what we believe, and who we talk to. And a few startups are deciding
-what all of that will look like.
+My generation is entering a working world that AI is reshaping in real time. The roles we are preparing for may look
+very different by the time we step into them. The products we use every day are changing how we pay attention, what we
+believe, and how we connect. And a relatively small number of companies are deciding what all of that will look like.
 
-The question I keep coming back to is: **[your one big question — e.g. "What does a good career look
-like when AI can do half the entry-level work?"]**
+The question I keep coming back to is: **what does a meaningful career look like when AI can do a growing share of
+entry-level work?**
 
-I write about three things:
+I write about three areas:
 
-- **AI & the future of work**: what's actually changing, who it helps, who it leaves out, and how to prepare
-- **Tech & society**: how the products we use are changing the way we live, think, and relate to each other
-- **Startups & products**: why some ideas win, and what that tells us about where things are headed
-
-Sometimes I'll write about other things too. It's my blog.
+- **AI and the future of work:** what is actually changing, who benefits, who gets left out, and how to prepare
+- **Technology and society:** how the products we use shape the way we live, think, and relate to one another
+- **Startups and products:** why some ideas win, and what that reveals about where things are headed
 
 ## Who I'm writing for
 
-[Students and early-career people trying to figure out where they fit, plus anyone further along
-who's willing to tell us what they're seeing. Rewrite this so it names the people you actually want
-to talk with.]
+Students and early-career professionals trying to figure out where they fit in an industry that AI is rewriting, and
+anyone further along who is willing to share what they are seeing from where they sit. If you are hiring, building, or
+studying in this space, your perspective is exactly what I am hoping to hear.
 
 ## Why you should comment
 
-I'm not an expert. I'm a curious person who's asking questions in public. Most posts end with a
-question, and I actually want your answer, especially if you disagree. The comments are where the
-real conversation happens, and I reply to every one.
+I approach every topic as someone who is still learning in public. Most posts end with a question, and I genuinely
+want your answer, especially if you disagree. The comments are where the real conversation happens, and I reply to
+every one.
 
 ## Get in touch
 
-The best way to reach me is [LinkedIn / email]. If you're working on something interesting in AI,
-tech, or startups, I'd love to hear about it.
+The best way to reach me is by email at [arjuntmohan333@gmail.com](mailto:arjuntmohan333@gmail.com). If you are
+working on something interesting in AI, product, or startups, I would love to hear about it.

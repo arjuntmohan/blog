@@ -6,12 +6,14 @@ export const SITE = {
 	// One sentence that sums up the blog. Shows on the home page and in link previews.
 	description:
 		'Thinking out loud about AI, the future of work, and the tech that is quietly reshaping how we live.',
+	// Shorter line used on the home page's link-preview card.
+	tagline: 'Thinking out loud about AI, work, and what comes next.',
 	author: 'Arjun Mohan',
 	// Leave a link as '' to hide its icon.
 	links: {
 		linkedin: '', // e.g. 'https://www.linkedin.com/in/your-handle/'
 		github: 'https://github.com/arjuntmohan',
-		email: '', // e.g. 'you@example.com'
+		email: 'arjuntmohan333@gmail.com',
 	},
 };
 

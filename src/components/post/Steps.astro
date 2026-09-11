@@ -1,0 +1,113 @@
+---
+// A numbered vertical flow. <Steps steps={[{ title, tech, text }]} />
+interface Step {
+	title: string;
+	tech?: string;
+	text: string;
+	branch?: boolean;
+}
+interface Props {
+	label?: string;
+	steps: Step[];
+}
+const { label, steps } = Astro.props;
+---
+
+<figure class="steps">
+	{label && <figcaption class="eyebrow">{label}</figcaption>}
+	<ol>
+		{
+			steps.map((step, i) => (
+				<li class:list={{ branch: step.branch }}>
+					<span class="dot">{String(i + 1).padStart(2, '0')}</span>
+					<div class="card">
+						<div class="head">
+							<strong>{step.title}</strong>
+							{step.tech && <code>{step.tech}</code>}
+						</div>
+						<p>{step.text}</p>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+</figure>
+
+<style>
+	.steps {
+		margin: 2.5rem 0;
+		padding: 1.5rem 1.4rem 0.5rem;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 16px;
+	}
+	figcaption {
+		margin: 0 0 1.25rem;
+	}
+	ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		position: relative;
+	}
+	li {
+		position: relative;
+		display: grid;
+		grid-template-columns: 2.4rem 1fr;
+		gap: 0.9rem;
+		padding-bottom: 1rem;
+		margin: 0;
+	}
+	li:not(:last-child)::before {
+		content: '';
+		position: absolute;
+		left: 1.2rem;
+		top: 2.2rem;
+		bottom: 0;
+		border-left: 1px dashed var(--line-strong);
+	}
+	.dot {
+		width: 2.4rem;
+		height: 2.4rem;
+		display: grid;
+		place-items: center;
+		border-radius: 10px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		font-family: var(--mono);
+		font-size: 0.72rem;
+		color: var(--muted);
+	}
+	.branch .dot {
+		background: var(--green);
+		border-color: #c9e3bb;
+		color: var(--green-ink);
+	}
+	.card {
+		padding: 0.85rem 1rem;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 12px;
+	}
+	.head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.3rem 0.8rem;
+	}
+	strong {
+		font-weight: 500;
+	}
+	code {
+		font-size: 0.7rem;
+		color: var(--muted);
+		background: var(--surface);
+	}
+	p {
+		margin: 0.3rem 0 0;
+		font-size: 0.93rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+</style>
