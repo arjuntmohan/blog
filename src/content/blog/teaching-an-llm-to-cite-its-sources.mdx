@@ -7,6 +7,11 @@ draft: false
 ---
 
 import Callout from '../../components/post/Callout.astro';
+import Gallery from '../../components/post/Gallery.astro';
+import cisco1 from '../../assets/cisco/cisco-1.jpg';
+import cisco2 from '../../assets/cisco/cisco-2.jpg';
+import cisco3 from '../../assets/cisco/cisco-3.jpg';
+import cisco4 from '../../assets/cisco/cisco-4.jpg';
 import RagDiagram from '../../components/post/RagDiagram.astro';
 import Stack from '../../components/post/Stack.astro';
 
@@ -283,6 +288,16 @@ in a single summer. Productive discomfort is part of the job.
 If you have used AI tools at work or school, **what made you trust the answers, or stop trusting them?** If you have
 built a RAG system, which stage caused you the most trouble? I would like to hear your perspective in the comments.
 </Callout>
+
+<Gallery
+	label="Moments from the summer"
+	photos={[
+		{ src: cisco1, alt: 'A large group of Cisco interns and team members waving at the camera during a summer outing', wide: true },
+		{ src: cisco2, alt: 'Interns and team members sharing a meal at a long restaurant table' },
+		{ src: cisco3, alt: 'Interns and team members posing together in a Cisco conference room' },
+		{ src: cisco4, alt: 'The team gathered around a wine-tasting table at J. Lohr Vineyards', wide: true },
+	]}
+/>
 
 [^lewis]: Lewis et al., [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401), NeurIPS 2020.
 [^anthropic]: Anthropic, [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval), September 2024. Figures are reductions in top-20 retrieval failure rate.
