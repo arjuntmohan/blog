@@ -87,18 +87,13 @@ The site lives at **https://blog.arjuntmohan.com**, served by GitHub Pages from 
 
 If the domain ever changes, update `site:` in `astro.config.mjs` to match.
 
-## Turn on comments
+## Comments
 
-Comments use [giscus](https://giscus.app), which stores each post's comments as a GitHub
-Discussion in your repository. It's free, has no ads, and handles spam well. **Commenters need a
-GitHub account.** For people who don't have one, the comments on your LinkedIn post are the
-other place the conversation happens.
+Comments use [giscus](https://giscus.app). Each post's comments are stored as a GitHub Discussion
+in the `Announcements` category of this repository, and GitHub notifies you when someone comments.
+It's free and ad-free, and it handles spam well. **Commenters need a GitHub account.** For people
+without one, the comments on your LinkedIn post about the article are the other place the
+conversation happens.
 
-1. Repository **Settings → General → Features**: check **Discussions**.
-2. Install the giscus app: https://github.com/apps/giscus and give it access to only this repository.
-3. In the repo's **Discussions** tab, click the pencil next to Categories, then **New category**.
-   Name it `Comments`, set the format to **Announcement**, and save.
-4. Go to https://giscus.app, type your repo name, pick the `Comments` category, then scroll to
-   "Enable giscus". Copy the `data-repo-id` and `data-category-id` values into `COMMENTS` in
-   `src/consts.ts`.
-5. Push. Every post now has a comment box, and you get a GitHub notification for each new comment.
+The settings live in `COMMENTS` in `src/consts.ts`. The giscus GitHub app must stay installed on
+this repository (https://github.com/apps/giscus) for the comment box to work.

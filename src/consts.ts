@@ -16,13 +16,12 @@ export const SITE = {
 };
 
 // Comments are powered by giscus (https://giscus.app), which stores them as GitHub Discussions.
-// Fill these in after following the "Turn on comments" steps in README.md.
-// Until repoId and categoryId are set, posts show a placeholder instead of the comment box.
+// Each post's comments become a discussion in the repo's "Announcements" category.
 export const COMMENTS = {
 	repo: 'arjuntmohan/blog',
-	repoId: '',
-	category: 'Comments',
-	categoryId: '',
+	repoId: 'R_kgDOUWGu7w',
+	category: 'Announcements',
+	categoryId: 'DIC_kwDOUWGu784DFWn_',
 };
 
 // Kept for compatibility with template code that imports these names.
