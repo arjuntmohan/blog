@@ -73,16 +73,19 @@ write your post, and commit. The site updates the same way.
 
 ## Going live (one-time setup)
 
-1. On GitHub, create a new **public** repository named exactly `<your-username>.github.io`.
-2. In `astro.config.mjs`, set `site: 'https://<your-username>.github.io'`.
-   In `src/consts.ts`, add your LinkedIn/GitHub links.
-3. Push this folder to that repository. The first push will ask you to sign in to GitHub.
-4. In the repository, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
-5. Watch the **Actions** tab. When the run turns green, the site is live at
-   `https://<your-username>.github.io`.
+The site lives at **https://blog.arjuntmohan.com**, served by GitHub Pages from the
+`arjuntmohan/blog` repository. The root domain `arjuntmohan.com` is kept free for a portfolio.
 
-A custom domain (like `yourname.com`, about $12/year) can be added later under
-**Settings → Pages → Custom domain**. Update `site:` to match.
+1. Make sure the repository is **public** (Settings → General → Danger Zone → Change visibility).
+2. Push this folder with GitHub Desktop.
+3. In the repository, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
+   Watch the **Actions** tab until the run turns green.
+4. Same page, **Custom domain**: enter `blog.arjuntmohan.com` and save.
+5. In Cloudflare, go to **arjuntmohan.com → DNS → Records** and add a `CNAME` record: name `blog`,
+   target `arjuntmohan.github.io`, proxy status **DNS only** (grey cloud).
+6. When GitHub's DNS check passes, check **Enforce HTTPS**.
+
+If the domain ever changes, update `site:` in `astro.config.mjs` to match.
 
 ## Turn on comments
 
@@ -97,5 +100,5 @@ other place the conversation happens.
    Name it `Comments`, set the format to **Announcement**, and save.
 4. Go to https://giscus.app, type your repo name, pick the `Comments` category, then scroll to
    "Enable giscus". Copy the `data-repo-id` and `data-category-id` values into `COMMENTS` in
-   `src/consts.ts` (along with `repo: '<your-username>/<your-username>.github.io'`).
+   `src/consts.ts`.
 5. Push. Every post now has a comment box, and you get a GitHub notification for each new comment.
