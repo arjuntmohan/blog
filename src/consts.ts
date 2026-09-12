@@ -11,7 +11,7 @@ export const SITE = {
 	author: 'Arjun Mohan',
 	// Leave a link as '' to hide its icon.
 	links: {
-		linkedin: '', // e.g. 'https://www.linkedin.com/in/your-handle/'
+		linkedin: 'https://www.linkedin.com/in/arjuntmohan/',
 		github: 'https://github.com/arjuntmohan',
 		email: 'arjuntmohan333@gmail.com',
 	},

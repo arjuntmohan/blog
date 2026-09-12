@@ -42,5 +42,6 @@ every one.
 
 ## Get in touch
 
-The best way to reach me is by email at [arjuntmohan333@gmail.com](mailto:arjuntmohan333@gmail.com). If you are
-working on something interesting in AI, product, or startups, I would love to hear about it.
+The best way to reach me is by email at [arjuntmohan333@gmail.com](mailto:arjuntmohan333@gmail.com) or on
+[LinkedIn](https://www.linkedin.com/in/arjuntmohan/). If you are working on something interesting in AI, product, or
+startups, I would love to hear about it.
