@@ -1,0 +1,227 @@
+---
+title: "Where I Actually Use AI in Student Government"
+description: "A product teardown of running two leadership programs at Associated Students: which tasks AI genuinely fits, which only look automatable, and the one place I pulled it back."
+pubDate: 2026-09-17
+tags: ["ai", "tech", "leadership"]
+draft: true
+---
+
+import Callout from '../../components/post/Callout.astro';
+
+{/*
+  DRAFT. Read the applications section once more before publishing and make sure you are comfortable
+  having it public, since A.S. colleagues and employers may read it.
+*/}
+
+Every year the holidays move. Labor Day, Veterans Day, and the Thanksgiving break land on different weekdays, which
+means a program that meets on Wednesdays loses a different number of sessions than one that meets on Tuesdays. Rebuild
+a ten-week curriculum around that and you find yourself counting weekdays by hand, twice, for two different programs.
+
+That was one afternoon of my job this fall. I am the Chief of Staff for Associated Students at San Diego State, where I
+run two first-year leadership programs: FLEX, which runs all year, and FAST TRACK, which runs a semester at a time.
+Between them there is recruitment, interviews, committee placement, a weekly session to prepare and deliver, and a
+steady stream of written material.
+
+It is exactly the kind of work people mean when they say AI will transform administrative jobs. So this semester I paid
+attention to where it genuinely helped, where it created work, and where I decided it had no business being.
+
+<Callout label="Key takeaways">
+- The tasks AI handled best were the boring, checkable ones. Not the creative ones.
+- The largest time sink, writing materials, turned out to be a drafting problem, not a thinking problem. That is where
+  AI earned its place.
+- Anything that decides an outcome for a specific student stays human, and there is research explaining why.
+</Callout>
+
+## The test I ended up using
+
+After a few weeks I noticed I was asking myself the same four questions before handing anything over. Together they
+work as a rough decision rule:
+
+1. **Is this deterministic or is it judgment?** Counting Wednesdays between two dates has exactly one right answer.
+   Deciding which session to cut does not.
+2. **Can I check the output faster than I could do the work?** If verifying takes as long as doing it, there is no gain.
+3. **Does a specific student's outcome depend on it?** Admission, placement, evaluation. That is a hard line.
+4. **Does it touch student information?** Under FERPA, records a school maintains about a student are education
+   records, and the rules that govern them do not change because the tool is new.[^ferpa]
+
+The interesting thing is how often these disagree with intuition. The work that feels most tedious is not always the
+work that should be automated, and the work that feels creative is sometimes the most mechanical.
+
+| Task | Verdict |
+| --- | --- |
+| Rebuilding the calendars around holidays | Good fit. Deterministic and instantly checkable |
+| Drafting handouts, slides, and emails | Good fit. Draft from AI, final words from me |
+| Mapping the curriculum to certificate requirements | Partial. Useful for coverage, not for what to cut |
+| Reading and evaluating applications | Human. A student's opportunity depends on it |
+| Running the hour in the room | Human. That is the actual job |
+
+## Where it worked
+
+### The calendar rebuild
+
+This is the cleanest case. Two programs, ten sessions each, mapped against the university's published academic
+calendar, with holidays knocking out different weeks depending on the meeting day. The rules are fixed and the output
+is verifiable in a minute against a calendar anyone can look up.
+
+That verifiability is the whole reason it works. The failure mode of a language model here is a confidently wrong date,
+which is exactly the failure I wrote about last week in a very different setting.[^rag] A wrong date does not look
+wrong. It looks like every other date. So every generated schedule got checked against the published calendar before it
+went anywhere, and one holiday collision turned up that way.
+
+Honestly, this task does not need a language model at all. It needs a small script that takes the academic calendar and
+the program rules and produces both schedules, flagging any collision. That is the version I want to build before next
+year, because the rules do not change even though the dates do.
+
+### The written material
+
+This is where I spend the most time, and it surprised me. Scripts, handouts, slide decks, emails to students,
+recruitment posts. Every semester, largely the same material, rewritten.
+
+What I learned is that most of that time was not thinking. It was formatting, restructuring, and re-explaining
+something I had already decided. AI is genuinely good at that part. It takes a rough outline and returns something
+with a shape, which is much easier to react to than a blank page.
+
+The limit showed up quickly. Anything a student actually hears me say has to sound like me. A facilitator script is
+performed out loud in a room of eighteen-year-olds, and generated text has a particular rhythm that falls flat when you
+read it aloud: too balanced, too tidy, every paragraph landing on a neat conclusion. My rule now is that AI writes the
+scaffold and I write the sentences students hear.
+
+### Checking curriculum coverage
+
+Our programs are supposed to line up with the university's leadership certificate, which has four core learning areas.
+Asking whether a set of sessions covers four defined areas is a mapping question, and mapping is mechanical: here is a
+list, here is another list, where do they connect?
+
+What AI could not do was tell me what to cut. This year the curriculum moved away from panels toward activity-based
+sessions. That decision depended on knowing which panels students actually remembered, which guests were hard to book,
+and what the room feels like at 6pm on a Wednesday in November. None of that is in any document.
+
+## Where I pulled it back
+
+Applications are the line, and this is where my own practice was messier than the rule I just described.
+
+I used AI on one part of the application: the written statements. With a stack of responses to the same few prompts,
+it is genuinely hard to hold them all in your head at once. So I had a model read across the statements, group similar
+answers together, and flag which responses were unusual. That part I would do again. Comparing many pieces of text
+against each other is something software does better than a tired person at eleven at night, and it surfaced strong
+answers I might have skimmed past in the middle of the pile.
+
+I also asked it which candidates stood out, based on factors I gave it. That is the part I would do differently.
+
+When University of Washington researchers tested language models on resume screening across three million combinations
+of job, race, and gender, the models favored white-associated names in 85.1% of comparisons and female-associated names
+in only 11.1%. For Black male-associated names against white male-associated names, the models preferred the
+white-associated candidate in nearly every case.[^uw] Those systems were not built to be unfair. They were built to be
+helpful, and they reproduced the patterns in the text they learned from. A model asked who stands out will answer with
+confidence whether or not it has any business doing so.
+
+What kept this from being a real problem is that the model never had the last word, or the first one. I read every
+application myself, ran the interviews, and made every decision. Its output worked as a second pass over the
+statements, not as a filter: nobody was cut because software did not like their writing.
+
+Still, "who stands out" is one short step from "who should get in," and that step is the whole ballgame. Two changes
+for next cycle. First, strip names and identifying details before any statement goes near a model, since names are
+exactly what drove the bias in that study. Second, keep the questions descriptive instead of evaluative: ask what
+themes come up across the statements, not who the strongest candidate is. The first question makes me a better reader
+of the pile. The second asks a system with documented bias to make a judgment about someone's future.
+
+There is a practical reason to keep it, too. Reading applications is how I learn the cohort before I ever meet them.
+Skipping that would save an evening and cost me the thing the evening was for.
+
+## What stays human, permanently
+
+The hour in the room. The one-to-ones. The moment a student has to defend a choice out loud to the person sitting next
+to them. Those are not tasks with outputs, and treating them as inefficiencies to be optimized misunderstands what the
+programs are for.
+
+That distinction matters more broadly than student government. The research on which jobs AI touches tends to find that
+exposure concentrates in writing, information gathering, and routine analysis rather than whole occupations.[^gpts] In
+practice that means the tedious edges of a job get faster while the core of it does not move much. My job did not
+become less human this semester. It became less clerical, which is a different thing.
+
+## Building the boring version
+
+Two of these tasks deserve real tools rather than a chat window. Neither is complicated, which is the point.
+
+**The schedule.** Everything I described about holidays and weekdays is arithmetic. The inputs are the campus holiday
+list and the rules of each program. The output is two schedules and a warning if they collide. Written down, the whole
+problem is about fifteen lines:
+
+<p class="code-label">Generating both program calendars</p>
+
+```python
+from datetime import date, timedelta
+
+# Straight from the published academic calendar, not from a model's memory
+CLOSED = {date(2026, 9, 7), date(2026, 11, 11), date(2026, 11, 25)}
+
+def sessions(start: date, weekday: int, count: int) -> list[date]:
+    """The next `count` meeting dates on `weekday`, skipping campus closures."""
+    dates, day = [], start
+    while day.weekday() != weekday:      # 0 = Monday
+        day += timedelta(days=1)
+    while len(dates) < count:
+        if day not in CLOSED:
+            dates.append(day)
+        day += timedelta(days=7)
+    return dates
+
+def collisions(a: list[date], b: list[date]) -> set[date]:
+    """Days both programs would meet, which is what I want flagged."""
+    return set(a) & set(b)
+```
+
+Run against this fall's dates, that reproduces our schedule exactly: ten sessions from late September to the second
+week of December, with the two closed Wednesdays skipped. It also answers in one line a question I worked out by hand,
+which is that putting the second program on Wednesdays collides every single week, while Monday clears every holiday.
+
+That version has properties a chat window does not. It gives the same answer every time. It can be tested. When the
+university publishes next year's calendar, one person updates one list and both schedules regenerate. And it cannot
+hallucinate a Wednesday, which is the specific failure I was checking for by hand.
+
+The general lesson: if a task has fixed rules and one correct answer, a language model is the least reliable way to
+get it. Use the model to help write the script, then let the script do the work.
+
+**The statement pass.** The version I would build for next cycle does the useful part without inviting the risky part.
+Separate identity from text before anything is read by a model, and keep the mapping on my side:
+
+<p class="code-label">De-identifying statements before analysis</p>
+
+```python
+import re
+
+IDENTIFIERS = ("first_name", "last_name", "preferred_name", "email", "student_id")
+
+def deidentify(application: dict) -> tuple[str, str]:
+    """Return (anonymous id, statement text) with obvious identifiers removed."""
+    text = application["statement"]
+    for field in IDENTIFIERS:
+        value = application.get(field)
+        if value:
+            text = re.sub(re.escape(value), "[redacted]", text, flags=re.IGNORECASE)
+    return application["anon_id"], text
+```
+
+Then the analysis asks for structure rather than verdicts: group these statements by theme, list the themes, and show
+which responses do not fit any of them. Unusual answers are what I want surfaced, and "unusual" is a property of the
+text. "Strongest" is a judgment about a person.
+
+Keeping the identity map outside the model is not just a privacy control, though it is that. It also changes what I
+can ask. If the model does not know who wrote anything, the only questions available are questions about writing.
+
+## The rule I would give another student leader
+
+Before you hand something over, ask whether you could check the answer in under a minute, and whether anyone's outcome
+depends on it being right. If it is checkable and nobody's future rides on it, hand it over. If it decides something
+about a person, keep it. Most tasks sort themselves quickly once you ask in that order.
+
+<Callout label="Discussion" tone="green">
+If you run a student organization, a club, or a small team: **which task would you hand to AI first, and which one
+would you never?** I am especially interested in cases where the obvious answer turned out to be wrong. Leave a
+comment below.
+</Callout>
+
+[^ferpa]: U.S. Department of Education, [FERPA](https://studentprivacy.ed.gov/ferpa). The school official exception appears at 34 CFR 99.31(a)(1)(i)(B).
+[^rag]: [Teaching an LLM to Cite Its Sources](/blog/teaching-an-llm-to-cite-its-sources/), on grounding AI answers in documentation during my internship at Cisco.
+[^uw]: Wilson and Caliskan, [Gender, Race, and Intersectional Bias in Resume Screening via Language Model Retrieval](https://arxiv.org/abs/2407.20371), AAAI/ACM Conference on AI, Ethics, and Society, 2024.
+[^gpts]: Eloundou et al., [GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models](https://arxiv.org/abs/2303.10130), 2023.
