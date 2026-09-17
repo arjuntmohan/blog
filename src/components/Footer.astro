@@ -1,8 +1,9 @@
 ---
 import { SITE } from '../consts';
 
-const { linkedin, github, email } = SITE.links;
+const { linkedin, github, email, portfolio } = SITE.links;
 const links = [
+	portfolio && { href: portfolio, label: 'Portfolio' },
 	linkedin && { href: linkedin, label: 'LinkedIn' },
 	github && { href: github, label: 'GitHub' },
 	email && { href: `mailto:${email}`, label: 'Email' },

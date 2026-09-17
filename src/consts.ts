@@ -13,6 +13,8 @@ export const SITE = {
 	links: {
 		linkedin: 'https://www.linkedin.com/in/arjuntmohan/',
 		github: 'https://github.com/arjuntmohan',
+		// Your portfolio. Shows up in the header and footer once this is set.
+		portfolio: 'https://arjuntmohan.com',
 		email: 'arjuntmohan333@gmail.com',
 	},
 };
