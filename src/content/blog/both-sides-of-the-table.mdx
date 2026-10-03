@@ -1,0 +1,260 @@
+---
+title: "Both Sides of the Table: What Actually Happens to Your Application"
+description: "I ran interviews and sat for them in the same month. What the scanning layer really does to a resume, tested with code, and why structured interviews change the answer."
+pubDate: 2026-09-25
+tags: ["ai", "tech", "careers"]
+draft: false
+---
+
+import Callout from '../../components/post/Callout.astro';
+
+This month I read applications, built a rubric, and interviewed candidates for roles in Associated Students. I also
+sat on the other side of it, applying for product management jobs and answering questions into a webcam with nobody
+on the other end.
+
+Doing both in the same few weeks is strange. The two chairs feel completely different, and the gap between them is
+mostly information. As the person running the process, I know exactly what happens to an application. As an
+applicant, I get silence and guesses.
+
+So this post is about closing that gap: what the scanning layer actually does, tested rather than assumed, and what
+running structured interviews taught me about the part that still comes down to people.
+
+<Callout label="Key takeaways">
+- The famous claim that most resumes are auto-rejected by software does not hold up. The real filter is quieter:
+  systems rank, and humans stop reading.
+- Layout matters more than keywords, but not the way the advice says. My two-column test parsed fine. A table-based
+  layout scrambled the meaning.
+- Wording matters a lot to a keyword ranker. Identical work scored 10.27 against a job posting when it used the
+  posting's vocabulary, and 1.25 when it did not.
+- Scored against 108 real resume and posting pairs, keyword ranking barely beat a coin flip at telling a human-judged
+  good candidate from a bad one.
+</Callout>
+
+## Part 1: the scanning layer
+
+An applicant tracking system is, underneath, three things: a database of applications, a parser that turns documents
+into structured fields, and a search and ranking layer sitting on top. Recruiters query it the way you would query
+any database.
+
+The scary version of this, which you have read a hundred times, is that 75% of resumes are rejected by software
+before a human sees them. That number has no research behind it. It traces back to a company that sold resume
+optimization software in 2013, and no peer-reviewed study supports it.
+
+The real finding is more interesting. In a Harvard Business School and Accenture study of hiring practices, 88% of
+employers said their own systems screen out qualified, high-skilled candidates, and the researchers estimated 27
+million workers in the United States are effectively hidden by these processes.[^hidden] Note who is being blamed
+there. It is not a rogue algorithm. It is the criteria employers configure, plus the ranked list a recruiter stops
+reading at row twenty.
+
+That distinction changes what you can do about it. You are not trying to trick a robot. You are trying to survive
+parsing, then rank high enough that a human reaches you.
+
+### Gate one: can it read your resume
+
+Parsing runs before anything else. If the parser mangles your document, the ranking layer never sees your best work.
+
+The standard advice is to avoid two-column layouts. I wanted to check, so I built the same resume three ways, printed
+each to PDF, and extracted the text the way a parser would.
+
+The two-column version came out clean. Every section landed in the right order, left column first, then right. That
+surprised me, and it means the common advice is at least partly wrong.
+
+Then I tried a layout built on a table, the way many Word and Canva templates are. Here is what came back:
+
+<p class="code-label">Table-based resume, as the parser reads it</p>
+
+```text
+SKILLS
+SQL
+Python
+Roadmapping
+EXPERIENCE
+Product Management Intern, Summer
+2026
+EDUCATION
+B.S. Management Information Systems,
+SDSU, 2027
+Shipped an internal tool used by
+engineers.
+Ran weekly feedback sessions.
+CERTIFICATIONS
+Google Project Management
+Chief of Staff, Student Government
+Ran recruitment and interviews.
+```
+
+Read that as a machine would. The accomplishments are now separated from the job they belong to. "Shipped an internal
+tool" appears under Education. The Chief of Staff bullets float below Certifications. Nothing is missing, but the
+structure that gives the words meaning is gone.
+
+So the rule is not "avoid columns." It is "avoid layouts that interleave rows," which is specifically what tables do.
+
+You can test your own resume in about ten seconds. Open the PDF, select all, copy, and paste into a plain text editor.
+What you see is roughly what the parser sees. If you want to be precise about it:
+
+<p class="code-label">Reading your own resume the way a parser does</p>
+
+```python
+from pypdf import PdfReader
+
+text = PdfReader("resume.pdf").pages[0].extract_text()
+print(text)   # if this reads out of order, so does the parser
+```
+
+### Gate two: ranking
+
+Once parsed, your application gets scored against the posting. Classic systems do this lexically, with a ranking
+function like BM25 that rewards documents sharing rare terms with the query.
+
+I wrote two versions of the same experience. One uses the language of the job posting. The other describes identical
+work in plain language, the way most people naturally write.
+
+<p class="code-label">A minimal keyword ranker, the kind an ATS search uses</p>
+
+```python
+import math, re
+from collections import Counter
+
+def tok(s):
+    return re.findall(r"[a-z0-9+#/]+", s.lower())
+
+def bm25(query, doc, corpus, k1=1.5, b=0.75):
+    N, avgdl = len(corpus), sum(len(d) for d in corpus) / len(corpus)
+    df = Counter(t for d in corpus for t in set(d))
+    tf, score = Counter(doc), 0.0
+    for t in set(tok(query)):
+        if t not in tf:
+            continue
+        idf = math.log(1 + (N - df[t] + 0.5) / (df[t] + 0.5))
+        score += idf * tf[t] * (k1 + 1) / (tf[t] + k1 * (1 - b + b * len(doc) / avgdl))
+    return score
+```
+
+The results were not close:
+
+| Same experience, written two ways | Score against the posting |
+| --- | --- |
+| Uses the posting's vocabulary ("roadmap", "A/B testing", "SQL", "requirements") | **10.27** |
+| Plain language ("build plan", "live trials of two versions", "pulled numbers from the database") | **1.25** |
+
+The second version is arguably better writing. It is certainly clearer to a human. Against a keyword ranker it is
+nearly invisible, because the only words it shares with the posting are "and", "from", "intern", "product", "the",
+and "to".
+
+This is not an argument for keyword stuffing, which human readers notice immediately and which newer systems handle
+poorly anyway. It is an argument for describing your real work in the employer's vocabulary. If they say A/B testing
+and you ran experiments, call them A/B tests.
+
+### Case study: does keyword matching agree with humans?
+
+The two-resume demo shows the mechanism. It does not tell you how much this matters in practice, so I ran a small
+study.
+
+I used a public dataset of resumes paired with job descriptions, where each pair carries a human label: Good Fit,
+Potential Fit, or No Fit.[^dataset] I sampled 108 pairs, 36 of each label, and scored every resume against the
+posting it was paired with, using the same BM25 ranker above. Then I checked whether the ranking agreed with the
+human judgment.
+
+If keyword ranking were a good proxy for fit, Good Fit resumes should score clearly higher. Here is what came back:
+
+| Human label | Pairs | Median score | Mean |
+| --- | --- | --- | --- |
+| No Fit | 36 | 47.9 | 55.5 |
+| Potential Fit | 36 | 58.3 | 67.7 |
+| Good Fit | 36 | 53.9 | 61.7 |
+
+The ordering is wrong. Resumes humans called a **Potential Fit** scored higher than the ones they called a **Good
+Fit**, and the gap between Good Fit and No Fit is small compared to the spread inside each group.
+
+Two numbers make it concrete:
+
+- Pick a random Good Fit resume and a random No Fit resume. The Good Fit one scores higher **57% of the time**. A coin
+  flip is 50%.
+- **44% of Good Fit resumes scored below the median No Fit resume.** Nearly half the qualified people sort below the
+  middle of the unqualified pile.
+
+Of the ten highest-scoring resumes in my sample, three were Good Fit, five were Potential Fit, and two were No Fit.
+
+It is not a length effect, which was my first suspicion. Average resume length was nearly identical across the three
+groups: 771, 749, and 772 words.
+
+What it measures is vocabulary overlap, and vocabulary overlap is a weak signal for whether someone can do a job.
+That is the quiet version of the hidden worker problem: nobody was auto-rejected, the list was simply sorted badly,
+and a recruiter reading the top twenty never saw the rest.
+
+**Limitations, because this is a blog post and not a paper.** It is 108 pairs from one dataset, scored with a basic
+BM25 implementation. Real systems add filters, knockout questions, and structured fields rather than ranking on raw
+text alone, and I cannot audit how the dataset's labels were produced. I report aggregate numbers only and quote no
+resume text, since these are real people's documents.
+
+### What is changing underneath
+
+Two shifts are worth knowing about.
+
+The first is technical. Lexical search is being replaced or supplemented by embedding-based matching, the same
+technique I wrote about for documentation retrieval.[^rag] Semantic matching means the plain-language resume above
+would fare better, because "live trials of two versions" sits near "A/B testing" in vector space. It also means the
+ranking becomes harder to inspect: there is no keyword list to point at, just a similarity score.
+
+The second is legal, and it happened this year. Illinois now prohibits employers from using AI that has a
+discriminatory effect in employment decisions, and requires them to tell you when AI is being used.[^illinois] New
+York City requires annual independent bias audits of automated employment decision tools.[^nyc] Colorado's broader
+AI law reaches employment decisions in June.[^colorado] The direction is consistent: disclosure, auditing, and
+liability that follows the effect rather than the intent.
+
+If you are applying in Illinois, you can ask whether AI is being used on your application. That is a right now, not a
+courtesy.
+
+## Part 2: the side of the table I was on
+
+Reading applications and running interviews changed what I think the technical layer is even for.
+
+Here is what we did. Every candidate got the same questions in the same order. Answers were scored against a rubric
+written before we started. More than one person interviewed and scored. We took notes during and made decisions
+afterward, comparing candidates against the rubric rather than against whoever we had just seen.
+
+None of that was novel. It turns out it is also the format with the strongest research behind it. In the most recent
+large reanalysis of selection methods, structured interviews came out at the top of the list, with a validity
+estimate around .42 compared to roughly .19 for unstructured conversations.[^sackett] Same hour, same candidate,
+twice the predictive power, purely from structure.
+
+Having now done it, I think the mechanism is mundane. Structure does not make you smarter about people. It makes
+candidates comparable, and it makes you write down why. When I had to score an answer against a criterion, I could no
+longer justify a vague good feeling, and I could not let a strong candidate earlier in the day quietly set the curve
+for everyone after them.
+
+The other thing I noticed is that structure protects candidates from me. My memory of interview four is worse than my
+notes from interview four. Without notes, the person I remember is the person who was most like me.
+
+## Part 3: what this changed about how I apply
+
+I write applications differently now, and it is not because I learned tricks.
+
+**I use the posting's words for work I actually did.** Not because a robot demands it, but because both the ranker
+and the tired human reading row twenty are looking for a match, and making them translate is my problem, not theirs.
+
+**I check that my resume parses.** Ten seconds, copy and paste. I had never done this before this month.
+
+**I treat one-way video interviews as a structured interview, because that is what they are.** Same questions, same
+order, no follow-ups, scored afterward. The format that feels most alien to a candidate is the format with the best
+research behind it, minus the part where someone can ask you what you meant.
+
+**I stopped reading silence as a verdict.** Systems rank. Humans stop reading. The gap between "rejected" and "never
+reached" is invisible from the outside, and treating them the same will drive you insane.
+
+The part that has not changed is the part that matters. Every process I have been on either side of this month came
+down to a person deciding they could picture working with you. The software decides who gets considered. People still
+decide who gets picked.
+
+<Callout label="Discussion" tone="green">
+If you have been hiring or job hunting recently: **what surprised you most about the other side of the table?** And
+if you have run interviews, did structure help you or get in the way? Leave a comment below.
+</Callout>
+
+[^hidden]: Fuller, Raman et al., [Hidden Workers: Untapped Talent](https://www.hbs.edu/ris/Publication%20Files/hiddenworkers09032021_Fuller_white_paper_33a2047f-41dd-47b1-9a8d-bd08cf3bfa94.pdf), Harvard Business School and Accenture, September 2021.
+[^rag]: [Teaching an LLM to Cite Its Sources](/blog/teaching-an-llm-to-cite-its-sources/), on retrieval and embeddings.
+[^illinois]: Illinois HB 3773, amending the Illinois Human Rights Act, effective January 1, 2026.
+[^nyc]: New York City Local Law 144 of 2021, governing automated employment decision tools.
+[^colorado]: Colorado SB 24-205, the Colorado AI Act, with employment provisions effective June 30, 2026.
+[^dataset]: [cnamuangtoun/resume-job-description-fit](https://huggingface.co/datasets/cnamuangtoun/resume-job-description-fit) on Hugging Face, 8,000 labeled resume and job description pairs. I sampled 108.
+[^sackett]: Sackett, Zhang, Berry and Lievens, [Revisiting Meta-Analytic Estimates of Validity in Personnel Selection](https://filiplievens.squarespace.com/s/APL-2022-4078_R3.pdf), Journal of Applied Psychology, 2022.
