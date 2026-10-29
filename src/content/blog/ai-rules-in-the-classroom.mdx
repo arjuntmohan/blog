@@ -1,0 +1,211 @@
+---
+title: "One Class Bans the Internet. The System Bought Everyone ChatGPT."
+description: "What AI rules on campus actually say, why detection cannot settle the question, and what I learned about writing from mentoring a hundred students through their drafts."
+pubDate: 2026-10-29
+tags: ["ai", "tech", "education"]
+draft: false
+---
+
+import Callout from '../../components/post/Callout.astro';
+
+In one of my classes this semester, the rules are strict in an old-fashioned way. No internet. No outside sources.
+You work from the material the professor gives you, and that is it.
+
+In another class, the assignment is this blog. Publish in public, use the tools, learn the technology.
+
+Same student, same semester, same campus. Both of those are defensible positions, and the gap between them is where
+every student I know is currently living.
+
+<Callout label="Key takeaways">
+- The confusion is structural, not individual. My university system bought AI access for more than 460,000 students
+  while leaving each instructor to decide whether using it is cheating.
+- AI detectors cannot carry the weight policies put on them. One study found a 61.3% false positive rate on essays by
+  non-native English writers.
+- After tutoring a hundred-plus students through their drafts, I think the real cost of outsourcing writing is not
+  dishonesty. It is skipping the part where you find out what you think.
+</Callout>
+
+## The contradiction is institutional
+
+Start with what my own university actually says. In May 2024, the SDSU University Senate expanded its definition of
+plagiarism to cover "representing work produced by generative Artificial Intelligence as one's own." Using generative
+AI that an instructor has not assigned counts as academic dishonesty. Beyond that baseline, instructors are, in the
+university's words, "empowered to determine whether students may use genAI in their classes," and the Center for
+Teaching and Learning's recommended syllabus line is simply: "Students should not use generative AI applications in
+this course except as approved by the instructor."[^sdsu]
+
+Now the other half. In February 2025, the California State University system, which SDSU belongs to, announced
+ChatGPT Edu for more than 460,000 students and over 63,000 faculty and staff across 23 campuses, described at the time
+as the first systemwide deployment of its kind in the country.[^csu] Students received access that July. EdSource
+reports the first 18-month contract cost $17 million and that CSU renewed it at roughly $13 million a year, over
+faculty objections that included a petition to cancel it.[^csucrit]
+
+So the system spent tens of millions putting an AI tool in every student's account, and whether opening it counts as
+cheating depends on which classroom you walk into that hour.
+
+I am not claiming either side is wrong. The professor banning the internet is testing something real: what you can do
+with your own head and a fixed set of materials. That is a legitimate thing to measure, and it is one of the few
+formats that is actually verifiable right now. The system buying AI access is also responding to something real:
+students graduate into jobs where these tools are standard.
+
+The failure is in the middle. Nobody translated either position into instructions a student can follow across five
+courses at once.
+
+## What students are actually doing
+
+The behavior is not in dispute. In the Lumina Foundation and Gallup 2026 State of Higher Education study, which
+surveyed 3,801 students in October 2025, 57% reported using AI in their coursework at least weekly and about one in
+five reported using it daily.[^gallup]
+
+In the UK, the Higher Education Policy Institute's 2026 survey of 1,054 full-time undergraduates found 95% using
+generative AI in some way and 94% using it on assessed work. The same survey found only 12% put AI-generated text
+directly into submitted work.[^hepi] That gap is the part policies keep missing. Near-universal use is not
+near-universal ghostwriting.
+
+Those numbers describe a norm, not an epidemic of cheating. The interesting question stopped being whether students
+use AI. It is which uses a given assignment should count as learning.
+
+## Why detection cannot settle it
+
+The obvious reach is for a detector. It does not work, and the reason is technical.
+
+Most detectors score how *predictable* text is. Language models produce text with low surprise, word after word
+falling near the most probable option. Human writing tends to be lumpier. The detector measures that smoothness and
+calls it a probability of machine authorship.
+
+The problem is that plenty of human writing is smooth, especially writing by people still acquiring the language.
+When Stanford researchers tested seven detectors, they found an average **61.3% false positive rate on TOEFL essays
+written by non-native English speakers**, compared with **5.1%** on essays by U.S. eighth graders. Prompting a model
+to make text "sound more like a native English speaker" made it read as more human to the same tools.[^liang]
+
+Read those two numbers together. The tool is bad at detecting machines, and the humans it wrongly accuses are
+disproportionately the ones with the least standing to argue. Vanderbilt disabled Turnitin's AI detector in August
+2023 for exactly this reason. Its math was simple: Turnitin claimed a 1% false positive rate, Vanderbilt had submitted
+about 75,000 papers the previous year, so roughly 750 student papers would have been wrongly flagged.[^vanderbilt]
+
+Later work has argued the picture is more complicated, including that some of the gap may track subject matter and
+discipline rather than language background.[^later] Fine. The policy conclusion survives either way: a score from a
+detector is not evidence of what a student did, and no honest process should treat it as such.
+
+This is the same lesson from the first thing I wrote on this blog, inverted. There, an AI answer was only worth what
+you could trace to a source. Here, an accusation is only worth what you can trace to evidence. In both cases, the
+output is confident, the confidence is unearned, and the person on the receiving end is the one who pays.
+
+## What I learned watching a hundred people write
+
+For a year I worked as a writing mentor, sitting with undergraduates and their drafts. That job changed what I think
+this whole debate is about.
+
+Most students who came to me were not stuck on grammar. They were stuck because they did not yet know what they
+thought. The draft was bad because the thinking was unfinished, and the useful hour was the one where they talked it
+out and discovered the argument they actually wanted to make. The writing was downstream of that.
+
+That is the part a generated draft skips. Not the honesty, the discovery. You get a competent paragraph without ever
+hitting the moment where you realize your point does not hold and you have to change your mind. Submit it and you
+might get the grade. You just did not get the thing the assignment was for.
+
+Which is also why blanket bans feel beside the point to me. A student who asks a model to explain a confusing source,
+then argues with it, then writes their own paragraph, is doing more thinking than one who silently paraphrases a
+textbook. Those two are indistinguishable under most syllabus language, and that is the failure.
+
+## What the evidence actually says
+
+Most AI policy I have read is written as though the research does not exist. It does, and it is more interesting than
+either side of the campus argument.
+
+**Cheating did not spike.** Stanford researchers surveying students at 40 U.S. high schools found that 60% to 70%
+reported at least one cheating behavior in the previous month, a rate that stayed flat or dipped slightly after
+ChatGPT arrived.[^pope] That is a high number, and it was a high number before. The tool changed the method, not the
+prevalence. It is high school data from 2023 and the authors called it preliminary, so I would not lean on it alone,
+but it does undercut the premise that policy is responding to a sudden collapse in integrity.
+
+**Unstructured chatbot access can genuinely damage learning.** In a randomized trial with roughly 1,000 students
+across 50 classrooms, researchers gave some students a plain GPT-4 chat interface, some a version with tutoring
+guardrails, and some nothing beyond their textbook. During practice, the AI groups did far better: 48% better for the
+plain interface and 127% better for the tutor version. Then came a closed-book exam with no AI. The students who had
+used the plain chatbot scored **17% worse than the students who never had AI at all**. The guardrailed tutor group
+landed level with the control.[^bastani]
+
+That is the clearest statement of the problem I have found. The chatbot was a crutch during practice, the practice
+scores looked great, and the learning did not happen.
+
+**Well-designed AI tutoring can beat the classroom.** In a Harvard randomized trial, 194 introductory physics students
+alternated between an active-learning classroom session and an at-home session with a custom AI tutor built with
+pedagogical constraints. Median post-test scores were 4.5 for the AI condition against 3.5 for the classroom, from the
+same baseline, which the authors describe as more than double the learning gain. Students also spent less time and
+reported higher engagement.[^kestin]
+
+Same technology, three very different outcomes. What separates them is not whether AI was allowed. It is whether the
+design made the student do the thinking. A tutor that asks questions and withholds answers produced the best result in
+the literature. A chatbot that hands over finished answers produced the worst.
+
+That is the distinction a syllabus has to encode, and "no AI" does not encode it.
+
+## What is being tried elsewhere
+
+Four approaches, roughly:
+
+**Teach it on purpose.** Ohio State committed that "every Ohio State student, beginning with the class of 2029, will
+graduate being AI fluent." Generative AI basics are taught in the required General Education Launch Seminar, workshops
+run through the First Year Success Series, and the university published six learning outcomes, including evaluating AI
+outputs and weighing the ethical and environmental implications of the technology.[^osu] Whether it works is unknown,
+but it takes a position and resources it.
+
+**Redesign the assessment.** Some institutions are shifting weight to in-class writing, supervised exams, oral
+examinations, and assessing process rather than final products. Reporting describes rising demand for blue books on
+several large campuses.[^bluebooks] This works for verification. It also comes at a cost that falls unevenly, since timed
+handwritten work disadvantages multilingual students and students with accommodations, which is the same population
+the detectors already treat worst.
+
+**Agree on principles across institutions.** In July 2023 the 24 Russell Group universities in the UK published five
+shared principles: support students and staff to become AI-literate; equip staff to support students using the tools;
+adapt teaching and assessment to incorporate ethical use and support equal access; uphold academic rigour and
+integrity; and work collaboratively to share best practice as the technology evolves.[^russell] It is a statement of
+direction rather than a rulebook, but every one of those sentences is a commitment a student could hold a university
+to.
+
+**Grade the level of use.** The approach I find most sensible is the AI Assessment Scale, which replaces a yes-or-no
+rule with five defined levels, from no AI at all through full AI use, chosen per assignment and stated up front.[^aias]
+Its authors report adoption across hundreds of institutions, and the framework has been picked up by
+quality agencies in other countries.
+
+The common thread in the ones that work is specificity. The instructor decides what the assignment is for, then says
+which level of help serves that purpose. "Don't cheat" is not a policy. It is a mood.
+
+## What I would want on a syllabus
+
+Writing this as a student who also builds with these tools, here is the version I would find usable:
+
+1. **A level per assignment, not per course.** The reflection paper and the take-home analysis do not need the same
+   rule. Say which is which.
+2. **Specifics about tasks, not tools.** "You may use AI to check your grammar and to explain readings. You may not
+   use it to generate your argument or your prose" tells me more than any list of banned apps.
+3. **Disclosure instead of surveillance.** Ask me to write a line at the end saying what I used and how. Cheap,
+   checkable in context, and it makes honesty the easy path.
+4. **No detector scores as evidence.** If authorship is in question, talk to me about my work. I can explain anything
+   I actually wrote.
+
+For my part: I use AI in my own process, including on this blog, and I think saying so plainly should be normal
+rather than brave. The policy I want is the one I would be happy to follow in public.
+
+<Callout label="Discussion" tone="green">
+Students: **what does your strictest class actually require, and does it make sense to you?** Faculty, I would
+genuinely like to hear the other side: what does a policy need to say for you to trust a stack of submitted work?
+Leave a comment below.
+</Callout>
+
+[^sdsu]: San Diego State University Library, [AI at SDSU](https://libguides.sdsu.edu/AI), citing the University Senate's May 2024 revision of the plagiarism definition and the Center for Teaching and Learning's recommended syllabus statement.
+[^csu]: California State University, [CSU Announces Landmark Initiative to Become the Nation's First and Largest AI-Empowered University System](https://www.calstate.edu/csu-system/news/Pages/CSU-AI-Powered-Initiative.aspx), February 2025. Deployment figures as reported by [Campus Technology](https://campustechnology.com/articles/2025/02/05/california-state-university-launches-systemwide-chatgpt-edu-deployment.aspx), 5 February 2025.
+[^csucrit]: EdSource, [California State University renews controversial systemwide contract with OpenAI](https://edsource.org/2026/cal-state-renews-controversial-system-wide-contract-with-openai/758919), 2026.
+[^gallup]: Gallup and Lumina Foundation, [AI Is Routine for College Students, Despite Campus Limits](https://news.gallup.com/poll/704090/routine-college-students-despite-campus-limits.aspx), published April 2026. Web surveys of 3,801 students, fielded 2 to 31 October 2025.
+[^hepi]: Stephenson and Armstrong, [Student Generative AI Survey 2026](https://www.hepi.ac.uk/reports/student-generative-ai-survey-2026/), Higher Education Policy Institute Report 199, published 12 March 2026. Polling by Savanta, 1,054 full-time UK undergraduates, fielded December 2025, sponsored by Kortext.
+[^liang]: Liang, Yuksekgonul, Mao, Wu and Zou, [GPT Detectors Are Biased Against Non-Native English Writers](https://arxiv.org/abs/2304.02819), Patterns (Cell Press), 2023. Seven detectors tested against TOEFL essays and U.S. eighth-grade essays.
+[^vanderbilt]: Vanderbilt University, [Guidance on AI Detection and Why We're Disabling Turnitin's AI Detector](https://www.vanderbilt.edu/brightspace/2023/08/16/guidance-on-ai-detection-and-why-were-disabling-turnitins-ai-detector/), 16 August 2023.
+[^later]: See, for example, [Style as a Confound: False Positives in AI Detection of Non-Native Academic Writing](https://arxiv.org/abs/2608.26710), 2026, which argues the gap may partly reflect subject matter and disciplinary conventions.
+[^osu]: Ohio State University Office of Academic Affairs, [AI Fluency](https://oaa.osu.edu/ai-fluency), including the six published learning outcomes.
+[^bluebooks]: Axios, [Blue books make an "out of step" campus comeback in the AI era](https://www.axios.com/2026/03/14/ai-blue-books-colleges-jobs), 2026.
+[^pope]: Stanford Graduate School of Education and Challenge Success, reported in [What do AI chatbots really mean for students and cheating?](https://ed.stanford.edu/news/what-do-ai-chatbots-really-mean-students-and-cheating), December 2023. Anonymous surveys at 40 U.S. high schools; the authors describe the findings as preliminary.
+[^bastani]: Bastani, Bastani, Sungu, Ge and Kabakcı, [Generative AI without guardrails can harm learning: Evidence from high school mathematics](https://doi.org/10.1073/pnas.2422633122), Proceedings of the National Academy of Sciences, 25 June 2025. Randomized controlled trial, roughly 1,000 students across 50 classrooms.
+[^kestin]: Kestin, Miller, Klales, Milbourne and Ponti, [AI tutoring outperforms in-class active learning: an RCT introducing a novel research-based design in an authentic educational setting](https://doi.org/10.1038/s41598-025-97652-6), Scientific Reports, 3 June 2025. 194 students, crossover design, introductory physics.
+[^russell]: Russell Group, [Principles on the use of generative AI tools in education](https://www.russellgroup.ac.uk/policy/policy-briefings/principles-use-generative-ai-tools-education), July 2023, adopted by all 24 member universities.
+[^aias]: Perkins, Furze, Roe and MacVaugh, [The Artificial Intelligence Assessment Scale (AIAS): A Framework for Ethical Integration of Generative AI in Educational Assessment](https://arxiv.org/abs/2312.07086), Journal of University Teaching and Learning Practice 21(06), 2024.
