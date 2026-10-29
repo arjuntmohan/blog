@@ -206,6 +206,21 @@ th {
 	background: #2c2c2c;
 }
 
+/* Secondary button: same shape, lighter weight. Used for the link back to the portfolio. */
+.button.ghost {
+	background: transparent;
+	color: var(--ink);
+	border: 1px solid var(--line-strong);
+	box-shadow: none;
+	transition:
+		background 0.15s,
+		border-color 0.15s;
+}
+.button.ghost:hover {
+	background: var(--card);
+	border-color: var(--muted);
+}
+
 .sr-only {
 	position: absolute !important;
 	width: 1px;
